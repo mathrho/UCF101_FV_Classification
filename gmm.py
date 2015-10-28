@@ -58,7 +58,7 @@ def gmm_model(sample, k_gmm, PCA=False):
         # eigvecs are normalized.
         eigvals, eigvecs = np.linalg.eig(cov)
         perm = eigvals.argsort() # sort by increasing eigenvalue 
-        pca_transform = eigvecs[:, perm[orig_comps-pca_dim:orig_comps]]   # eigenvectors for the 64 last eigenvalues
+        pca_transform = eigvecs[:, perm[orig_comps-pca_dim:orig_comps]]   # eigenvectors for the last half eigenvalues
         # transform sample with PCA (note that numpy imposes line-vectors,
         # so we right-multiply the vectors)
         sample = np.dot(sample, pca_transform)
