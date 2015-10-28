@@ -1,5 +1,7 @@
 import argparse
 import os, subprocess, ThreadPool
+import IDT_feature
+import computeFV
 import classify_library
 
 """
@@ -8,44 +10,56 @@ each of the videos in the input list (vid_in). The Fisher Vectors are output
 in the fv_dir
 """
 
+# Improved Dense Trajectories binary
+dtBin = './DenseTrackStab'
 # ...
 COMPUTE_FV = 'python ./computeFVstream.py'
 
 
 # This is is the function that each worker will compute.
-def processVideo(vid,vid_dir,idt_dir,fv_dir,gmm_list):
+def processVideo(vid,IDT_DIR,FV_DIR,gmm_list):
     """
-    gmm_list is the file of the saved list of GMMs
-    """
-    vid_file = os.path.join(vid_dir,vid)
-    fv_file = os.path.join(fv_dir, vid.split('.')[0]+'.fv')
-    extractFV(video_file, output_file, gmm_listf)
-
-
-def extractFV(videoName, outputBase, gmm_list):
-    """
-    Extracts the IDTFs, constructs a Fisher Vector, and saves the Fisher Vector at outputBase
-    outputBase: the full path to the newly constructed fisher vector.
+    Extracts the IDTFs, constructs a Fisher Vector, and saves the Fisher Vector at FV_DIR
+    output_file: the full path to the newly constructed fisher vector.
     gmm_list: file of the saved list of gmms
     """
-    subprocess.call('%s %s | %s %s %s' % (dtBin, resizedName, COMPUTE_FV, outputBase, gmm_list), shell=True)
+    input_file = os.path.join(IDT_DIR, vid.split('.')[0]+'.bin')
+    output_file = os.path.join(FV_DIR, vid.split('.')[0]+'.fv')
+
+    if not os.path.exists(input_file):
+        print '%s IDT Feature does not exist!' % vid
+        return False
+
+    if os.path.exists(output_file):
+        print '%s Fisher Vector exists, skip!' % vid
+        return False
+
+    video_desc = IDT_feature.vid_descriptors(IDT_feature.read_IDTF_file(IDT_DIR,vid.split('.')[0]+'.bin'))
+    computeFV.create_fisher_vector(gmm_list, video_desc, output_file)
     return True
+
+
+def processVideoFrames(vid,IDT_DIR,FV_DIR,gmm_list):
+    """
+    Extracts the IDTFs, constructs a Fisher Vector for each video frame, and saves the Fisher Vector at FV_DIR
+    output_file: the full path to the newly constructed fisher vector.
+    gmm_list: file of the saved list of gmms
+    """
+    # do nothing
+    
 
 
 #python computeFVs.py vid_dir vid_list fv_dir gmm_list
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("vid_dir", help="Directory of the video dataset", type=str)
-    parser.add_argument("vid_list", help="list of input videos in .txt file", type=str)
-    parser.add_argument("fv_dir", help="output directory to save FVs (.fv files)", type=str)
+    parser.add_argument("vid_dir", help="Directory of the video features", type=str)
+    parser.add_argument("vid_list", help="List of input videos in .txt file", type=str)
+    parser.add_argument("fv_dir", help="Output directory to save FVs (.fv files)", type=str)
     parser.add_argument("gmm_list", help="File of saved list of GMMs", type=str)
     args = parser.parse_args()
 
-    MAIN_DIR = args.vid_dir
-    VID_DIR = os.path.join(MAIN_DIR,'videos')
-    IDT_DIR = os.path.join(MAIN_DIR,'features','idt')
+    IDT_DIR = args.vid_dir
     FV_DIR = args.fv_dir
-    vid_list = args.vid_list
 
     f = open(args.vid_list, 'r')
     input_videos = f.readlines()

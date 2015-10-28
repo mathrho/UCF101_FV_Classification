@@ -20,6 +20,8 @@ UCF101_DIR = "/home/zhenyang/Workspace/data/UCF101"
 
 # Improved Dense Trajectories binary
 dtBin = './DenseTrackStab'
+# ...
+COMPUTE_FV = 'python ./computeFVstream.py'
 
 
 def extract(video_file, output_file):
@@ -31,7 +33,7 @@ def extract(video_file, output_file):
         return False
 
     if os.path.exists(output_file):
-        print '%s IDT Features exist, skip!' % video_file
+        print '%s IDT Feature exists, skip!' % video_file
         return False
 
     command = '%s -f %s -o %s' % (dtBin, video_file, output_file, )

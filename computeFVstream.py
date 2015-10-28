@@ -12,6 +12,7 @@ computes a Fisher vector given an input stream of IDTFs
 
 Usage:
 	stream_of_IDTFs | python computeFVstream.py fisher_path gmm_list
+   ./DenseTrackStab video_file | python computeFVstream.py fisher_path gmm_list
 """
 
 
@@ -27,7 +28,4 @@ if __name__ == '__main__':
       points.append(IDT_feature.IDTFeature(line))
    video_desc = IDT_feature.vid_descriptors(points)
    computeFV.create_fisher_vector(gmm_list, video_desc, args.fisher_path)
-
-
-
 

@@ -10,7 +10,7 @@ Encodes a fisher vector.
 """
 
 
-def create_fisher_vector(gmm_list, video_desc, fisher_path):
+def create_fisher_vector(gmm_list, video_desc, fv_file):
   """
   expects a single video_descriptors object. videos_desciptors objects are defined in IDT_feature.py
   fisher path is the full path to the fisher vector that is created.
@@ -58,6 +58,6 @@ def create_fisher_vector(gmm_list, video_desc, fisher_path):
   #example name:
   # 'v_Archery_g01_c01.fisher.npz'
   #subdirectory name
-  np.savez(fisher_path, fish=output_fv)
-  print fisher_path
+  np.savez(fv_file, fv=output_fv)
+  print fv_file
   return output_fv
