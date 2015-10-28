@@ -2,83 +2,61 @@
 
 import numpy as np
 import subprocess, os
-import sys, ffmpeg
+import sys
 
 """
 Wrapper library for the IDTF executable.
 Implements methods to extract IDTFs.
 Seperate methods for extracting IDTF and computing Fisher Vectors.
 
-Assumes existance of tmpDir to store resized videos.
-
 
 Example usage:
 
-python computeIDTF.py video_list.txt output_directory
+python computeIDTF.py VID_DIR video_list.txt output_directory
 
 """
-#Path to the video repository
-ucf101_path = "/Users/Bryan/CS/CS_Research/data/UCF101"
+# Path to the video repository
+UCF101_DIR = "/home/zhenyang/Workspace/data/UCF101"
 
 # Improved Dense Trajectories binary
-dtBin = '/Users/Bryan/CS/CS_Research/code/improved_trajectory_release/release/DenseTrackStab'
-
-# Temp directory to store resized videos
-tmpDir = './tmp'
+dtBin = './DenseTrackStab'
 
 
-COMPUTE_FV = 'python ./computeFVstream.py'
-
-
-
-def extract(videoName, outputBase):
+def extract(video_file, output_file):
     """
     Extracts the IDTFs and stores them in outputBase file.
     """
-    if not os.path.exists(videoName):
-        print '%s does not exist!' % videoName
+    if not os.path.exists(video_file):
+        print '%s does not exist!' % video_file
         return False
-    resizedName = os.path.join(tmpDir, os.path.basename(videoName))
-    if not ffmpeg.resize(videoName, resizedName):
-        resizedName = videoName     # resize failed, just use the input video
-    subprocess.call('%s %s > %s' % (dtBin, resizedName, outputBase), shell=True)
-    return True
 
-
-
-def extractFV(videoName, outputBase,gmm_list):
-    """
-    Extracts the IDTFs, constructs a Fisher Vector, and saves the Fisher Vector at outputBase
-    outputBase: the full path to the newly constructed fisher vector.
-    gmm_list: file of the saved list of gmms
-    """
-    if not os.path.exists(videoName):
-        print '%s does not exist!' % videoName
+    if os.path.exists(output_file):
+        print '%s IDT Features exist, skip!' % video_file
         return False
-    resizedName = os.path.join(tmpDir, os.path.basename(videoName))
-    resized_vids = [filename for filename in os.listdir(tmpDir) if filename.endswith('.avi')]
-    if os.path.basename(videoName) not in resized_vids:
-        if not ffmpeg.resize(videoName, resizedName):
-            resizedName = videoName     # resize failed, just use the input video
-    print videoName
-    subprocess.call('%s %s | %s %s %s' % (dtBin, resizedName, COMPUTE_FV, outputBase, gmm_list), shell=True)
+
+    command = '%s -f %s -o %s' % (dtBin, video_file, output_file, )
+    proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, universal_newlines=True)
+    while proc.poll() is None:
+        line = proc.stdout.readline()
+        print(line)
     return True
 
 
 if __name__ == '__main__':
-    #Useage: python computeIDTF.py video_list.txt output_directory
-    videoList = sys.argv[1]
-    outputBase = sys.argv[2]
+    # Useage: python computeIDTF.py VID_DIR video_list.txt output_directory
+    VID_DIR = sys.argv[1]
+    video_list = sys.argv[2]
+    IDT_DIR = sys.argv[3]
     try:
-        f = open(videoList, 'r')
+        f = open(video_list, 'r')
         videos = f.readlines()
         f.close()
         videos = [video.rstrip() for video in videos]
         for i in range(0, len(videos)):
-            outputName = os.path.join(outputBase, os.path.basename(videos[i])[:-4]+".features")
-            videoLocation = os.path.join(ucf101_path,videos[i])
+            output_file = os.path.join(IDT_DIR,os.path.splitext(videos[i])[0]+".bin")
+            video_file = os.path.join(VID_DIR,videos[i])
             print "generating IDTF for %s" % (videos[i],)
-            extract(videoLocation, outputName)
+            extract(video_file, output_file)
             print "completed."
     except IOError:
         sys.exit(0)

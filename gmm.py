@@ -1,16 +1,21 @@
+import computeIDTF, IDT_feature
+import numpy as np
+import sys, os
+from yael import ynumpy
+from tempfile import TemporaryFile
+import argparse
+
 """
 Can execute this as a script to populate the GMM or load it as a module
 
 PCA reduction on each descriptor is set to false by default.
 """
-import IDT_feature
-import numpy as np
-import sys, os
-from yael import ynumpy
-import argparse
+
+# Path to the video repository
+UCF101_DIR = "/home/zhenyang/Workspace/data/UCF101"
 
 
-def populate_gmms(VID_DIR, sample_vids, gmm_file, k_gmm, sample_size=1500000, PCA=False):
+def populate_gmms(IDT_DIR, sample_vids, gmm_file, k_gmm, sample_size=1500000, PCA=False):
     """
     sample_size is the number of IDTFs that we sample from the total_lines number of IDTFs
     that were computed previously.
@@ -23,7 +28,7 @@ def populate_gmms(VID_DIR, sample_vids, gmm_file, k_gmm, sample_size=1500000, PC
     nr_vids = len(sample_vids)
     nr_samples_pvid = np.ceil(sample_size/nr_vids)
 
-    sample_descriptors = IDT_feature.list_descriptors_sampled(VID_DIR, sample_vids, nr_samples_pvid)
+    sample_descriptors = IDT_feature.list_descriptors_sampled(IDT_DIR, sample_vids, nr_samples_pvid)
     bm_list = IDT_feature.bm_descriptors(sample_descriptors)
 
     #Construct gmm models for each of the different descriptor types.
@@ -68,17 +73,17 @@ def gmm_model(sample, k_gmm, PCA=False):
     return toReturn
 
 
-def computeIDTFs(training_samples, VID_DIR):
+def computeIDTFs(training_samples, VID_DIR, IDT_DIR):
     """
     Computes the IDTFs specifically used for constructing the GMM
     training_samples is a list of videos located at the VID_DIR directory.
-    The IDT features are output in the GMM_dir.
+    The IDT features are output in the IDT_DIR.
     """
     for video in training_samples:
-        videoLocation = os.path.join(VID_DIR,video)
-        featureOutput = os.path.join(GMM_dir,os.path.basename(video)[:-4]+".features")
+        video_file = os.path.join(VID_DIR,video)
+        output_file = os.path.join(IDT_DIR,os.path.splitext(video)[0]+'.bin')
         print "Computing IDTF for %s" % (video)
-        computeIDTF.extract(videoLocation, featureOutput)
+        computeIDTF.extract(video_file, output_file)
         print "complete."  
 
 
@@ -99,7 +104,7 @@ def sampleVids(vid_list, nr_pcls=1):
         key = int(l[1])
         if key not in vid_dict:
             vid_dict[key] = []
-        vid_dict[key].append(l[0].split('/')[1])
+        vid_dict[key].append(l[0])
     
     samples = []
     for k,v in vid_dict.iteritems():
@@ -108,16 +113,16 @@ def sampleVids(vid_list, nr_pcls=1):
     return samples
 
 
-#python gmm.py 120 UCF101_dir train_list
+#python gmm.py -k 256 -v UCF101_DIR -l train1.txt -o UCF101_gmm256 -p
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-k', '--gmmk', help='Number of GMM modes', type=int, required=True)
-    parser.add_argument('-v', '--videos', help="Directory of the input videos or features", type=str)
+    parser.add_argument('-k', '--gmmk', help="Number of GMM modes", type=int, required=True)
+    parser.add_argument('-v', '--videos', help="Directory of the video dataset", type=str)
     parser.add_argument('-l', '--vidlist', help="List of input videos from which to sample", type=str)
     parser.add_argument('-o', '--gmmfile', help="Output file to save the list of gmms", type=str)
 
    # parser.add_argument("-p", "--pca", type=float, help="percent of original descriptor components to retain after PCA")
-    parser.add_argument("-p", "--pca", action="store_true",
+    parser.add_argument('-p', '--pca', action="store_true",
         help="Reduce each descriptor dimension by 50 percent using PCA")
     args = parser.parse_args()
 
@@ -126,16 +131,20 @@ if __name__ == '__main__':
     print args.vidlist
     print args.gmmfile
 
-    VID_DIR = args.videos
-    input_list = args.input_list
+    VID_DIR = os.path.join(args.videos,'videos')
+    IDT_DIR = os.path.join(args.videos,'features','idt')
+    vid_list = args.vidlist
 
-    #vid_samples = sampleVids(input_list)
-    vid_samples = input_list
+    # vid_samples = sampleVids(vid_list)
+    # select all for GMM training
+    f = open(vid_list, 'r')
+    input_videos = f.readlines()
+    f.close()
+    vid_samples = [line.split()[0] for line in [video.rstrip() for video in input_videos]]
 
-    #computeIDTFs(vid_samples, VID_DIR)
+    #computeIDTFs(vid_samples, VID_DIR, IDT_DIR)
     features = []
     for vidname in vid_samples:
         vidname_ = os.path.splitext(vidname)[0]
         features.append(vidname_+'.bin')
-    populate_gmms(VID_DIR,features,args.gmmfile,args.gmmk,PCA=args.pca)
-
+    populate_gmms(IDT_DIR,features,args.gmmfile,args.gmmk,PCA=args.pca)
