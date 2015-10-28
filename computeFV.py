@@ -14,8 +14,8 @@ def create_fisher_vector(gmm_list, video_desc, fv_file):
   """
   expects a single video_descriptors object. videos_desciptors objects are defined in IDT_feature.py
   fisher path is the full path to the fisher vector that is created.
-  
-  this single video_desc contains the (trajs, hogs, hofs, mbhxs, mbhys) np.ndarrays
+
+  this single video_desc contains the (trajs, hogs, hofs, mbhs) np.ndarrays
   """
   vid_desc_list = []
   vid_desc_list.append(video_desc.traj)
@@ -23,8 +23,8 @@ def create_fisher_vector(gmm_list, video_desc, fv_file):
   vid_desc_list.append(video_desc.hof)
   vid_desc_list.append(video_desc.mbhx)
   vid_desc_list.append(video_desc.mbhy)
-  #For each video create and normalize a fisher vector for each of the descriptors. Then, concatenate the
-  #fisher vectors together to get an extra long fisher vector.
+  # For each video create and normalize a fisher vector for each of the descriptors. Then, concatenate the
+  # fisher vectors together to get an extra long fisher vector.
   # Return a list of all of these long fisher vectors. The list should be the same length as the number
   # of input videos.
   fvs = []

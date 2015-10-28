@@ -6,7 +6,7 @@ import classify_library
 
 """
 Uses multi-threading to extract IDTFs and compute the Fisher Vectors (FVs) for
-each of the videos in the input list (vid_in). The Fisher Vectors are output
+each of the videos in the input list (vid_list). The Fisher Vectors are output
 in the fv_dir
 """
 
