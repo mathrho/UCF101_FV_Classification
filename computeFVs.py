@@ -21,7 +21,7 @@ def processVideo(vid,IDT_DIR,FV_DIR,gmm_list):
     """
     Extracts the IDTFs, constructs a Fisher Vector, and saves the Fisher Vector at FV_DIR
     output_file: the full path to the newly constructed fisher vector.
-    gmm_list: file of the saved list of gmms
+    gmm_list: a list of gmms
     """
     input_file = os.path.join(IDT_DIR, vid.split('.')[0]+'.bin')
     output_file = os.path.join(FV_DIR, vid.split('.')[0]+'.fv')
@@ -43,7 +43,7 @@ def processVideoFrames(vid,IDT_DIR,FV_DIR,gmm_list):
     """
     Extracts the IDTFs, constructs a Fisher Vector for each video frame, and saves the Fisher Vector at FV_DIR
     output_file: the full path to the newly constructed fisher vector.
-    gmm_list: file of the saved list of gmms
+    gmm_list: a list of gmms
     """
     # do nothing
     
@@ -67,13 +67,14 @@ if __name__ == '__main__':
     input_videos = [line.split()[0] for line in [video.rstrip() for video in input_videos]]
     
     ###Just to prevent overwriting already processed vids
-    completed_vids = [filename.split('.')[0] for filename in os.listdir(FV_DIR) if filename.endswith('.npz')]
+    completed_vids = [filename.split('.')[0] for filename in os.listdir(FV_DIR) if filename.endswith('.fv.mat')]
     overlap = [vid for vid in input_videos if vid.split('.')[0] in completed_vids]
     
+    gmm_list = np.load(args.gmm_list+".npz")['gmm_list']
     #Multi-threaded FV construction.
     numThreads = 10
     pool = ThreadPool.ThreadPool(numThreads)
     for vid in input_videos:
         if vid not in overlap:
-            pool.add_task(processVideo,vid,IDT_DIR,FV_DIR,args.gmm_list)
+            pool.add_task(processVideo,vid,IDT_DIR,FV_DIR,gmm_list)
     pool.wait_completion()
