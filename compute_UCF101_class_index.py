@@ -14,29 +14,29 @@ Opposite mapping from the class_index map.
 dict{ class_index: class_name}
 
 Example usage:
-python compute_UCF101_class_index.py /Users/Bryan/CS/CS_Research/data/class_attributes_UCF101/Class_Index.txt
+python compute_UCF101_class_index.py Class_Index.txt
 """
 
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser()
-  parser.add_argument("class_index", help="File of class index", type=str)
-  parser.add_argument("class_out", help="File of saved class index map", type=str)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("class_index", help="File of class index", type=str)
+    parser.add_argument("class_out", help="File of saved class index map", type=str)
 
-  args = parser.parse_args()
+    args = parser.parse_args()
 
-  try:
-    f = open(args.class_index, 'r')
-    videos = f.readlines()
-    f.close()
-    videos = [video.strip() for video in videos]
-    class_index = {}
-    index_class = {}
-    for video in videos:
-      video_s = video.split()
-      class_index[string.lower(str(video_s[1]))] = int(video_s[0])
-      index_class[int(video_s[0])] = string.lower(str(video_s[1]))
+    try:
+        f = open(args.class_index, 'r')
+        videos = f.readlines()
+        f.close()
+        videos = [video.rstrip() for video in videos]
+        class_index = {}
+        index_class = {}
+        for video in videos:
+            video_s = video.split()
+            class_index[string.lower(str(video_s[1]))] = int(video_s[0])
+            index_class[int(video_s[0])] = string.lower(str(video_s[1]))
 
-    np.savez(args.class_out, class_index=class_index, index_class=index_class)
-  except IOError:
-    sys.exit(0)
+        np.savez(args.class_out, class_index=class_index, index_class=index_class)
+    except IOError:
+        sys.exit(0)

@@ -74,6 +74,7 @@ def create_fisher_vector(gmm_list, video_desc, fv_file, fv_sqrt=False, fv_l2=Fal
     # fvs[2] >>> hof.fv
     # fvs[3] >>> mbh.fv
     # np.savez(fv_file, fv=fvs)
-    scipy.io.savemat(fv_file+'.mat', mdict = {'fv_traj':fvs[0], 'fv_hog':fvs[1], 'fv_hof':fvs[2], 'fv_mbh':fvs[3]}, oned_as='column')
+    # fl['fv'][0,:]
+    scipy.io.savemat(fv_file+'.mat', mdict={'fv':fvs}, oned_as='row')
     print fv_file
     return fvs
