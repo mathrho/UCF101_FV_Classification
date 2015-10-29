@@ -34,7 +34,7 @@ def processVideo(vid,IDT_DIR,FV_DIR,gmm_list):
         print '%s Fisher Vector exists, skip!' % vid
         return False
 
-    video_desc = IDT_feature.vid_descriptors(IDT_feature.read_IDTF_file(IDT_DIR,vid.split('.')[0]+'.bin'))
+    video_desc = IDT_feature.vid_descriptors(IDT_feature.read_IDTF_file(input_file))
     computeFV.create_fisher_vector(gmm_list, video_desc, output_file)
     return True
 

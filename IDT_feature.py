@@ -92,7 +92,7 @@ def populate_descriptors(directory, vid_features):
     vid_hofs = []
     vid_mbhs = []
     for vid_feature in vid_features:
-        vid_desc = vid_descriptors(read_IDTF_file(directory,vid_feature))
+        vid_desc = vid_descriptors(read_IDTF_file(os.path.join(directory,vid_feature)))
         vid_trajs.append(vid_desc.traj)
         vid_hogs.append(vid_desc.hog)
         vid_hofs.append(vid_desc.hof)
@@ -105,7 +105,7 @@ def populate_descriptors(directory, vid_features):
 def list_descriptors(directory, vid_features):
     vid_descs = []
     for vid_feature in vid_features:
-      vid_descs.append(vid_descriptors(read_IDTF_file(directory,vid_feature)))
+      vid_descs.append(vid_descriptors(read_IDTF_file(os.path.join(directory,vid_feature))))
     return vid_descs
 
 
@@ -114,7 +114,7 @@ def list_descriptors_sampled(directory, vid_features, nr_sampels_pvid):
     vid_descs = []
     for vid_feature in vid_features:
         print vid_feature
-        points = read_IDTF_file(directory,vid_feature)
+        points = read_IDTF_file(os.path.join(directory,vid_feature))
         sample_size = min(len(points),nr_sampels_pvid)
         idx_sampled = random.sample(xrange(len(points)),sample_size)
         idx_sampled.sort()
@@ -152,10 +152,10 @@ def bm_descriptors(descriptors_list):
 
 
 # Parses a video's IDTF (binary) file and returns IDTF feature
-def read_IDTF_file(directory, vid_feature):
+def read_IDTF_file(vid_feature):
 
     points = []
-    data = np.fromfile(os.path.join(directory,vid_feature), dtype=np.float32)
+    data = np.fromfile(vid_feature, dtype=np.float32)
 
     if data.size:
         data = np.reshape(data, (-1,ALL_DIM))
