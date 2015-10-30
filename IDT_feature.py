@@ -115,7 +115,6 @@ def list_descriptors_sampled(directory, vid_features, nr_sampels_pvid):
     for vid_feature in vid_features:
         print vid_feature
         points = read_IDTF_file(os.path.join(directory,vid_feature))
-        import pdb; pdb.set_trace()
         if points:
             nr_points = len(points)
             sample_size = min(nr_points,nr_sampels_pvid)
