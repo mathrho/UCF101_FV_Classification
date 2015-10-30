@@ -159,7 +159,7 @@ def read_IDTF_file(vid_feature):
 
     if data.size:
         data = np.reshape(data, (-1,ALL_DIM))
-        for p in range(0:data.shape[0]):
+        for p in range(0,data.shape[0]):
             points.append(IDTFeature(data[p,:]))
 
     return points
