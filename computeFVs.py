@@ -2,7 +2,7 @@ import argparse
 import os, subprocess, ThreadPool
 import IDT_feature
 import computeFV
-import classify_library
+
 
 """
 Uses multi-threading to extract IDTFs and compute the Fisher Vectors (FVs) for
