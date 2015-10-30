@@ -77,5 +77,6 @@ if __name__ == '__main__':
     pool = ThreadPool.ThreadPool(numThreads)
     for vid in input_videos:
         if vid not in overlap:
-            pool.add_task(processVideo,vid,IDT_DIR,FV_DIR,gmm_list)
-    pool.wait_completion()
+            processVideo(vid,IDT_DIR,FV_DIR,gmm_list)
+            #pool.add_task(processVideo,vid,IDT_DIR,FV_DIR,gmm_list)
+    #pool.wait_completion()
