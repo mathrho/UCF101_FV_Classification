@@ -1,4 +1,5 @@
 import argparse
+import numpy as np
 import os, subprocess, ThreadPool
 import IDT_feature
 import computeFV
