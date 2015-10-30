@@ -29,7 +29,6 @@ def populate_gmms(IDT_DIR, sample_vids, gmm_file, k_gmm, sample_size=1500000, PC
     nr_samples_pvid = np.ceil(sample_size/nr_vids)
 
     sample_descriptors = IDT_feature.list_descriptors_sampled(IDT_DIR, sample_vids, nr_samples_pvid)
-    import pdb; pdb.set_trace()
     bm_list = IDT_feature.bm_descriptors(sample_descriptors)
 
     #Construct gmm models for each of the different descriptor types.

@@ -115,9 +115,11 @@ def list_descriptors_sampled(directory, vid_features, nr_sampels_pvid):
     for vid_feature in vid_features:
         print vid_feature
         points = read_IDTF_file(os.path.join(directory,vid_feature))
+        import pdb; pdb.set_trace()
         if points:
-            sample_size = min(len(points),nr_sampels_pvid)
-            idx_sampled = random.sample(xrange(len(points)),sample_size)
+            nr_points = len(points)
+            sample_size = min(nr_points,nr_sampels_pvid)
+            idx_sampled = random.sample(xrange(nr_points),sample_size)
             idx_sampled.sort()
             points_sampled = [points[i] for i in idx_sampled]
             vid_descs.append(vid_descriptors(points_sampled))
