@@ -38,7 +38,7 @@ def create_fisher_vector(gmm_list, video_desc, fv_file, fv_sqrt=False, fv_l2=Fal
         
         # compute the Fisher vector, using the derivative w.r.t mu and sigma
         fv = ynumpy.fisher(gmm, descrip, include = ['mu', 'sigma'])
-
+        import pdb; pdb.set_trace()
         # normalizations are done on each descriptor individually
         if fv_sqrt:
             # power-normalization
