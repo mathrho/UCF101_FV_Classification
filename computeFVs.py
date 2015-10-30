@@ -50,7 +50,8 @@ def processVideoFrames(vid,IDT_DIR,FV_DIR,gmm_list):
     
 
 
-#python computeFVs.py vid_dir vid_list fv_dir gmm_list
+# python computeFVs.py vid_dir vid_list fv_dir gmm_list
+# import pdb; pdb.set_trace()
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("vid_dir", help="Directory of the video features", type=str)
@@ -77,6 +78,6 @@ if __name__ == '__main__':
     pool = ThreadPool.ThreadPool(numThreads)
     for vid in input_videos:
         if vid not in overlap:
-            processVideo(vid,IDT_DIR,FV_DIR,gmm_list)
-            #pool.add_task(processVideo,vid,IDT_DIR,FV_DIR,gmm_list)
-    #pool.wait_completion()
+            #processVideo(vid,IDT_DIR,FV_DIR,gmm_list)
+            pool.add_task(processVideo,vid,IDT_DIR,FV_DIR,gmm_list)
+    pool.wait_completion()
