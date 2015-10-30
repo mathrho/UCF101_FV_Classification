@@ -47,7 +47,6 @@ def processVideoFrames(vid,IDT_DIR,FV_DIR,gmm_list):
     gmm_list: a list of gmms
     """
     # do nothing
-    
 
 
 # python computeFVs.py vid_dir vid_list fv_dir gmm_list
