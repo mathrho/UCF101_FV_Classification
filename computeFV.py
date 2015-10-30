@@ -52,6 +52,7 @@ def create_fisher_vector(gmm_list, video_desc, fv_file, fv_sqrt=False, fv_l2=Fal
             fv /= norms
             # handle images with 0 local descriptor (100 = far away from "normal" images)
             fv[np.isnan(fv)] = 100
+        
         # make column to row -wise??
         fvs.append(fv.T)
 

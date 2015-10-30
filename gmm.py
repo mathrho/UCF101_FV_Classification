@@ -30,11 +30,20 @@ def populate_gmms(IDT_DIR, sample_vids, gmm_file, k_gmm, sample_size=1500000, PC
 
     sample_descriptors = IDT_feature.list_descriptors_sampled(IDT_DIR, sample_vids, nr_samples_pvid)
     bm_list = IDT_feature.bm_descriptors(sample_descriptors)
+    # save all sampled descriptors for learning gmm
+    bm_file = os.path.join(os.path.dirname(gmm_list), 'bm_descriptors_%d' % (sample_size,))
+    np.savez(bm_file, bm_list=bm_list)
 
-    #Construct gmm models for each of the different descriptor types.
+    # why sqrt? just like root sift! already done!!
+    # bm_list[0] = bm_list[0]
+    # bm_list[1] = np.sqrt(bm_list[1])
+    # bm_list[2] = np.sqrt(bm_list[2])
+    # bm_list[3] = np.sqrt(bm_list[3])
+
+    # Construct gmm models for each of the different descriptor types.
     gmm_list = [gmm_model(bm, k_gmm, PCA=PCA) for bm in bm_list]
     np.savez(gmm_file, gmm_list=gmm_list)
-    
+
     return gmm_list
 
 
