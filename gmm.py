@@ -26,7 +26,7 @@ def populate_gmms(IDT_DIR, sample_vids, gmm_file, k_gmm, sample_size=1500000, PC
     Returns the list of gmms.
     """
     nr_vids = len(sample_vids)
-    nr_samples_pvid = np.ceil(sample_size/nr_vids)
+    nr_samples_pvid = int(np.ceil(sample_size/nr_vids))
 
     sample_descriptors = IDT_feature.list_descriptors_sampled(IDT_DIR, sample_vids, nr_samples_pvid)
     bm_list = IDT_feature.bm_descriptors(sample_descriptors)
