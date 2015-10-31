@@ -31,7 +31,7 @@ def processVideo(vid,IDT_DIR,FV_DIR,gmm_list):
         print '%s IDT Feature does not exist!' % vid
         return False
 
-    if os.path.exists(output_file):
+    if os.path.exists(output_file+'.mat'):
         print '%s Fisher Vector exists, skip!' % vid
         return False
 
