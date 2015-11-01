@@ -24,9 +24,9 @@ train_list = '/home/zhenyang/Workspace/data/UCF101/train1.txt'
 test_list = '/home/zhenyang/Workspace/data/UCF101/test1.txt'
 fv_dir = '/home/zhenyang/Workspace/data/UCF101/features/fv'
 
-class_index_file_loaded = np.load(class_index_file)
-class_index = class_index_file_loaded['class_index'][()]
-index_class = class_index_file_loaded['index_class'][()]
+#class_index_file_loaded = np.load(class_index_file)
+#class_index = class_index_file_loaded['class_index'][()]
+#index_class = class_index_file_loaded['index_class'][()]
 
 
 def make_FV_matrix(videos, fv_dir, labels):
