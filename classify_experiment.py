@@ -34,6 +34,7 @@ def make_FV_matrix(videos, fv_dir, labels):
     matrix = []
     target = []
     for i,video in enumerate(videos):
+        print video
         vid_file = os.path.join(fv_dir,os.path.splitext(video)[0])
         matfile = scipy.io.loadmat(vid_file+'.fv.mat')
         fv_list = matfile['fv']
