@@ -16,6 +16,7 @@ from sklearn.svm import LinearSVC
 from sklearn import svm
 from sklearn.multiclass import OneVsRestClassifier
 import sklearn.metrics as metrics
+import classify_library
 
 
 class_index_file = "./class_index.npz"
