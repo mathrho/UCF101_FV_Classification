@@ -17,6 +17,7 @@ from sklearn import svm
 from sklearn.multiclass import OneVsRestClassifier
 import sklearn.metrics as metrics
 import classify_library
+import cPickle as pickle
 
 
 class_index_file = "./class_index.npz"
@@ -84,16 +85,38 @@ if __name__ == '__main__':
     labels_test = [int(line.split()[1]) for line in [video.rstrip() for video in videos]]
 
     # GET THE TRAINING AND TESTING DATA.
-    X_train, Y_train = make_FV_matrix(videos_train, fv_dir, labels_train)
-    X_test, Y_test = make_FV_matrix(videos_test, fv_dir, labels_test)
-    flname = '/home/zhenyang/Workspace/data/UCF101/features/UCF101_train1.fv'
-    np.savez(flname, X_train=X_train, Y_train=Y_train)
-    flname = '/home/zhenyang/Workspace/data/UCF101/features/UCF101_test1.fv'
-    np.savez(flname, X_test=X_test, Y_test=Y_test)
+    flname_train = '/home/zhenyang/Workspace/data/UCF101/features/UCF101_train1.fv'
+    if os.path.exists(flname_train+'.npz'):
+        data = np.load(flname_train)
+        X_train = data['X_train']
+        Y_train = data['Y_train']
+    else:
+        X_train, Y_train = make_FV_matrix(videos_train, fv_dir, labels_train)
+        np.savez(flname_train, X_train=X_train, Y_train=Y_train)
+
+    flname_test = '/home/zhenyang/Workspace/data/UCF101/features/UCF101_test1.fv'
+    if os.path.exist(flname_test+'.npz'):
+        data = np.load(flname_test)
+        X_test = data['X_test']
+        Y_test = data['Y_test']
+    else:
+        X_test, Y_test = make_FV_matrix(videos_test, fv_dir, labels_test)
+        np.savez(flname, X_test=X_test, Y_test=Y_test)
 
     # TRAINING
-    estimator = OneVsRestClassifier(LinearSVC(random_state=0, C=100, loss='l1', penalty='l2'))
-    classifier = estimator.fit(X_train, Y_train)
+    model_file = '/home/zhenyang/Workspace/data/UCF101/models/UCF101_linearsvm_traintest1'
+    if os.path.exist(model_file+'.pkl'):
+        with open(model_file+'.pkl', 'r') as fp:
+            classifier = pickle.load(fp)
+
+    else:
+        estimator = OneVsRestClassifier(LinearSVC(random_state=0, C=100, loss='l1', penalty='l2'))
+        classifier = estimator.fit(X_train, Y_train)
+        # store the model in a pickle file
+        with open(model_file+'.pkl', 'w') as fp:
+            pickle.dump(classifier, fp)
+
+    # TESTING
     metrics = classify_library.metric_scores(classifier, X_test, Y_test, verbose=True)
     print metrics
 
