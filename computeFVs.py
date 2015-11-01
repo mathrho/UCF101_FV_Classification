@@ -36,7 +36,6 @@ def processVideo(vid,IDT_DIR,FV_DIR,gmm_list):
         return False
 
     video_desc = IDT_feature.vid_descriptors(IDT_feature.read_IDTF_file(input_file))
-    import pdb; pdb.set_trace()
     computeFV.create_fisher_vector(gmm_list, video_desc, output_file)
     return True
 

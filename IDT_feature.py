@@ -58,20 +58,29 @@ class vid_descriptors(object):
     # input is a list of IDTFs objects (as specified by the above IDTFeature class) which represent the features of a video.
     def __init__(self, IDTFeatures):
 
-        trajs = []
-        hogs = []
-        hofs = []
-        mbhs = []
-        for feature in IDTFeatures:
-            trajs.append(np.ndarray(shape=(1,TRAJ_DIM), buffer=feature.traj, dtype=np.float32))
-            hogs.append(np.ndarray(shape=(1,HOG_DIM), buffer=feature.hog, dtype=np.float32))
-            hofs.append(np.ndarray(shape=(1,HOF_DIM), buffer=feature.hof, dtype=np.float32))
-            mbhs.append(np.ndarray(shape=(1,MBH_DIM), buffer=feature.mbh, dtype=np.float32))
+        if IDTFeatures:
 
-        self.traj = np.vstack(trajs)
-        self.hog = np.vstack(hogs)
-        self.hof = np.vstack(hofs)
-        self.mbh = np.vstack(mbhs)
+            trajs = []
+            hogs = []
+            hofs = []
+            mbhs = []
+            for feature in IDTFeatures:
+                trajs.append(np.ndarray(shape=(1,TRAJ_DIM), buffer=feature.traj, dtype=np.float32))
+                hogs.append(np.ndarray(shape=(1,HOG_DIM), buffer=feature.hog, dtype=np.float32))
+                hofs.append(np.ndarray(shape=(1,HOF_DIM), buffer=feature.hof, dtype=np.float32))
+                mbhs.append(np.ndarray(shape=(1,MBH_DIM), buffer=feature.mbh, dtype=np.float32))
+
+            self.traj = np.vstack(trajs)
+            self.hog = np.vstack(hogs)
+            self.hof = np.vstack(hofs)
+            self.mbh = np.vstack(mbhs)
+
+        else:
+            
+            self.traj = np.array([])
+            self.hog = np.array([])
+            self.hof = np.array([])
+            self.mbh = np.array([])
 
 
 ################################################################
