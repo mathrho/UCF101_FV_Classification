@@ -29,32 +29,33 @@ def create_fisher_vector(gmm_list, video_desc, fv_file, fv_sqrt=False, fv_l2=Fal
     # of input videos.
     fvs = []
     for descriptor,gmm_mean_pca in zip(vid_desc_list,gmm_list):
-        gmm, mean, pca_transform = gmm_mean_pca
-        # apply the PCA to the vid_trajectory descriptor
-        # each image_desc is of size (X,TRAJ_DIM). Pca_tranform is of size (TRAJ_DIM,TRAJ_DIM/2)
-        descrip = descriptor.astype('float32') - mean
-        if pca_transform != None:
-            descrip = np.dot(descrip, pca_transform)
-        
-        # compute the Fisher vector, using the derivative w.r.t mu and sigma
-        fv = ynumpy.fisher(gmm, descrip, include = ['mu', 'sigma'])
-        
-        # normalizations are done on each descriptor individually
-        if fv_sqrt:
-            # power-normalization
-            fv = np.sign(fv) * (np.abs(fv) ** 0.5)
+        if descriptor:
+            gmm, mean, pca_transform = gmm_mean_pca
+            # apply the PCA to the vid_trajectory descriptor
+            # each image_desc is of size (X,TRAJ_DIM). Pca_tranform is of size (TRAJ_DIM,TRAJ_DIM/2)
+            descrip = descriptor.astype('float32') - mean
+            if pca_transform != None:
+                descrip = np.dot(descrip, pca_transform)
+            
+            # compute the Fisher vector, using the derivative w.r.t mu and sigma
+            fv = ynumpy.fisher(gmm, descrip, include = ['mu', 'sigma'])
+            
+            # normalizations are done on each descriptor individually
+            if fv_sqrt:
+                # power-normalization
+                fv = np.sign(fv) * (np.abs(fv) ** 0.5)
 
-        if fv_l2:
-            # L2 normalize
-            # sum along the rows.
-            norms = np.sqrt(np.sum(fv ** 2))
-            # -1 allows reshape to infer the length. So it just solidifies the dimensions to (274,1)
-            fv /= norms
-            # handle images with 0 local descriptor (100 = far away from "normal" images)
-            fv[np.isnan(fv)] = 100
-        
-        # make column to row -wise??
-        fvs.append(fv.T)
+            if fv_l2:
+                # L2 normalize
+                # sum along the rows.
+                norms = np.sqrt(np.sum(fv ** 2))
+                # -1 allows reshape to infer the length. So it just solidifies the dimensions to (274,1)
+                fv /= norms
+                # handle images with 0 local descriptor (100 = far away from "normal" images)
+                fv[np.isnan(fv)] = 100
+            
+            # make column to row -wise??
+            fvs.append(fv.T)
 
     # concatenate fvs
     # output_fv = np.hstack(fvs)
