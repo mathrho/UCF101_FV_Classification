@@ -87,9 +87,9 @@ if __name__ == '__main__':
     X_train, Y_train = make_FV_matrix(videos_train, fv_dir, labels_train)
     X_test, Y_test = make_FV_matrix(videos_test, fv_dir, labels_test)
     flname = '/home/zhenyang/Workspace/data/UCF101/features/UCF101_train1.fv'
-    np.savez(flname, data_train=(X_train, Y_train))
+    np.savez(flname, X_train=X_train, Y_train=Y_train)
     flname = '/home/zhenyang/Workspace/data/UCF101/features/UCF101_test1.fv'
-    np.savez(flname, data_test=(X_test, Y_test))
+    np.savez(flname, X_test=X_test, Y_test=Y_test)
 
     # TRAINING
     estimator = OneVsRestClassifier(LinearSVC(random_state=0, C=100, loss='l1', penalty='l2'))
