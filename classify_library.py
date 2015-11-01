@@ -13,7 +13,7 @@ from sklearn.multiclass import OneVsRestClassifier
 import sklearn.metrics as metrics
 import matplotlib.pyplot as plt
 
-class_index_file = "/Users/Bryan/CS/CS_Research/code/CS221/class_index.npz"
+class_index_file = "./class_index.npz"
 class_index_file_loaded = np.load(class_index_file)
 class_index = class_index_file_loaded['class_index'][()]
 index_class = class_index_file_loaded['index_class'][()]
