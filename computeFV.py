@@ -29,7 +29,7 @@ def create_fisher_vector(gmm_list, video_desc, fv_file, fv_sqrt=False, fv_l2=Fal
     # of input videos.
     fvs = []
     for descriptor,gmm_mean_pca in zip(vid_desc_list,gmm_list):
-        if descriptor:
+        if descriptor.size:
             gmm, mean, pca_transform = gmm_mean_pca
             # apply the PCA to the vid_trajectory descriptor
             # each image_desc is of size (X,TRAJ_DIM). Pca_tranform is of size (TRAJ_DIM,TRAJ_DIM/2)
