@@ -87,7 +87,7 @@ if __name__ == '__main__':
     # GET THE TRAINING AND TESTING DATA.
     flname_train = '/home/zhenyang/Workspace/data/UCF101/features/UCF101_train1.fv'
     if os.path.exists(flname_train+'.npz'):
-        data = np.load(flname_train)
+        data = np.load(flname_train+'.npz')
         X_train = data['X_train']
         Y_train = data['Y_train']
     else:
@@ -95,17 +95,17 @@ if __name__ == '__main__':
         np.savez(flname_train, X_train=X_train, Y_train=Y_train)
 
     flname_test = '/home/zhenyang/Workspace/data/UCF101/features/UCF101_test1.fv'
-    if os.path.exist(flname_test+'.npz'):
-        data = np.load(flname_test)
+    if os.path.exists(flname_test+'.npz'):
+        data = np.load(flname_test+'.npz')
         X_test = data['X_test']
         Y_test = data['Y_test']
     else:
         X_test, Y_test = make_FV_matrix(videos_test, fv_dir, labels_test)
-        np.savez(flname, X_test=X_test, Y_test=Y_test)
+        np.savez(flname_test, X_test=X_test, Y_test=Y_test)
 
     # TRAINING
     model_file = '/home/zhenyang/Workspace/data/UCF101/models/UCF101_linearsvm_traintest1.model'
-    if os.path.exist(model_file+'.pkl'):
+    if os.path.exists(model_file+'.pkl'):
         with open(model_file+'.pkl', 'r') as fp:
             classifier = pickle.load(fp)
 
