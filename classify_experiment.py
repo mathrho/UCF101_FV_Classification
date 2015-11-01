@@ -36,11 +36,11 @@ def make_FV_matrix(videos, fv_dir, labels):
     for i,video in enumerate(videos):
         vid_file = os.path.join(fv_dir,os.path.splitext(video)[0])
         matfile = scipy.io.loadmat(vid_file+'.fv.mat')
-        fvlist = matfile['fv']
+        fv_list = matfile['fv']
 
-        if fvlist:
+        if fv_list.size:
             fvs = []
-            for fv in fvlist[0,:]:
+            for fv in fv_list[0,:]:
 
                 # power-normalization
                 fv = np.sign(fv) * (np.abs(fv) ** 0.5)
