@@ -36,29 +36,31 @@ def make_FV_matrix(videos, fv_dir, labels):
     for i,video in enumerate(videos):
         vid_file = os.path.join(fv_dir,os.path.splitext(video)[0])
         matfile = scipy.io.loadmat(vid_file+'.fv.mat')
+        fvlist = matfile['fv']
 
-        fvs = []
-        for fv in matfile['fv'][0,:]:
+        if fvlist:
+            fvs = []
+            for fv in fvlist[0,:]:
 
-            # power-normalization
-            fv = np.sign(fv) * (np.abs(fv) ** 0.5)
-            # L2 normalize
-            norms = np.sqrt(np.sum(fv ** 2))
-            fv /= norms
-            fv[np.isnan(fv)] = 100
+                # power-normalization
+                fv = np.sign(fv) * (np.abs(fv) ** 0.5)
+                # L2 normalize
+                norms = np.sqrt(np.sum(fv ** 2))
+                fv /= norms
+                fv[np.isnan(fv)] = 100
 
-            fvs.append(fv)
+                fvs.append(fv)
 
-        if fvs:
-            # concatenate fvs
-            output_fv = np.hstack(fvs)
+            if fvs:
+                # concatenate fvs
+                output_fv = np.hstack(fvs)
 
-            # L2 normalize the entire fv.
-            norm = np.sqrt(np.sum(output_fv ** 2))
-            output_fv /= norm
+                # L2 normalize the entire fv.
+                norm = np.sqrt(np.sum(output_fv ** 2))
+                output_fv /= norm
 
-            matrix.append(output_fv)
-            target.append(labels[i])
+                matrix.append(output_fv)
+                target.append(labels[i])
 
     X = np.vstack(matrix)
     Y = np.array(target)
