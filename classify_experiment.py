@@ -9,67 +9,87 @@ This script is used to experimentally test different parameter settings for the 
 
 import os, sys, collections, random, string
 import numpy as np
+import scipy.io
 from tempfile import TemporaryFile
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 from sklearn import svm
 from sklearn.multiclass import OneVsRestClassifier
 import sklearn.metrics as metrics
-import classify_library
-import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
 
 
 class_index_file = "./class_index.npz"
-training_output = './UCF101_Fishers/train'
-testing_output = './UCF101_Fishers/test'
+train_list = '/home/zhenyang/Workspace/data/UCF101/train1.txt'
+test_list = '/home/zhenyang/Workspace/data/UCF101/test1.txt'
+fv_dir = '/home/zhenyang/Workspace/data/UCF101/features/fv'
 
 class_index_file_loaded = np.load(class_index_file)
 class_index = class_index_file_loaded['class_index'][()]
 index_class = class_index_file_loaded['index_class'][()]
 
 
-# In[7]:
+def make_FV_matrix(videos, fv_dir, labels):
+
+    matrix = []
+    target = []
+    for i,video in enumerate(videos):
+        vid_file = os.path.join(fv_dir,os.path.splitext(video)[0])
+        matfile = scipy.io.loadmat(vid_file+'.fv.mat')
+
+        fvs = []
+        for fv in matfile['fv'][0,:]:
+
+            # power-normalization
+            fv = np.sign(fv) * (np.abs(fv) ** 0.5)
+            # L2 normalize
+            norms = np.sqrt(np.sum(fv ** 2))
+            fv /= norms
+            fv[np.isnan(fv)] = 100
+
+            fvs.append(fv)
+
+        if fvs:
+            # concatenate fvs
+            output_fv = np.hstack(fvs)
+
+            # L2 normalize the entire fv.
+            norm = np.sqrt(np.sum(output_fv ** 2))
+            output_fv /= norm
+
+            matrix.append(output_fv)
+            target.append(labels[i])
+
+    X = np.vstack(matrix)
+    Y = np.array(target)
+
+    return (X,Y)
 
 
-training = [filename for filename in os.listdir(training_output) if filename.endswith('.fisher.npz')]
-testing = [filename for filename in os.listdir(testing_output) if filename.endswith('.fisher.npz')]
+if __name__ == '__main__':
 
+    f = open(train_list, 'r')
+    videos = f.readlines()
+    f.close()
+    videos_train = [line.split()[0] for line in [video.rstrip() for video in videos]]
+    labels_train = [int(line.split()[1]) for line in [video.rstrip() for video in videos]]
 
-training_dict = classify_library.toDict(training)
-testing_dict = classify_library.toDict(testing)
+    f = open(test_list, 'r')
+    videos = f.readlines()
+    f.close()
+    videos_test = [line.split()[0] for line in [video.rstrip() for video in videos]]
+    labels_test = [int(line.split()[1]) for line in [video.rstrip() for video in videos]]
 
+    # GET THE TRAINING AND TESTING DATA.
+    X_train, Y_train = make_FV_matrix(videos_train, fv_dir, labels_train)
+    X_test, Y_test = make_FV_matrix(videos_test, fv_dir, labels_test)
+    flname = '/home/zhenyang/Workspace/data/UCF101/features/UCF101_train1.fv'
+    np.savez(flname, data_train=(X_train, Y_train))
+    flname = '/home/zhenyang/Workspace/data/UCF101/features/UCF101_test1.fv'
+    np.savez(flname, data_test=(X_test, Y_test))
 
-#GET THE TRAINING AND TESTING DATA.
-
-
-X_train_vids, X_test_vids = classify_library.limited_input(training_dict, testing_dict, 101, 24)
-X_train, Y_train = classify_library.make_FV_matrix(X_train_vids,training_output, class_index)
-X_test, Y_test = classify_library.make_FV_matrix(X_test_vids,testing_output, class_index)
-
-training_PCA = classify_library.limited_input1(training_dict,1)
-
-
-
-#Experiments with PCA
-pca_dim = 1000
-pca = PCA(n_components=pca_dim)
-pca.fit(X_train)
-X_train_PCA = pca.transform(X_train)
-X_test_PCA = pca.transform(X_test)
-estimator = OneVsRestClassifier(LinearSVC(random_state=0, C=100, loss='l1', penalty='l2'))
-classifier = estimator.fit(X_train_PCA, Y_train)
-metrics = classify_library.metric_scores(classifier, X_test_PCA, Y_test, verbose=True)
-print metrics
-
-
-do_learning_curve = False
-if do_learning_curve:
-    X_full = np.vstack([X_train_PCA, X_test_PCA])
-    Y_full = np.hstack([Y_train, Y_test])
-    title= "Learning Curves (Linear SVM, C: %d, loss: %s, penalty: %s, PCA dim: %d)" % (100,'l1','l2',pca_dim)
-    cv = cross_validation.ShuffleSplit(X_full.shape[0], n_iter=4,test_size=0.2, random_state=0)
+    # TRAINING
     estimator = OneVsRestClassifier(LinearSVC(random_state=0, C=100, loss='l1', penalty='l2'))
-    plot_learning_curve(estimator, title, X_full, Y_full, (0.7, 1.01), cv=cv, n_jobs=1)
-    plt.show()
+    classifier = estimator.fit(X_train, Y_train)
+    metrics = classify_library.metric_scores(classifier, X_test, Y_test, verbose=True)
+    print metrics
 
