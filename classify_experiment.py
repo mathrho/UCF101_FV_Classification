@@ -104,7 +104,7 @@ if __name__ == '__main__':
         np.savez(flname, X_test=X_test, Y_test=Y_test)
 
     # TRAINING
-    model_file = '/home/zhenyang/Workspace/data/UCF101/models/UCF101_linearsvm_traintest1'
+    model_file = '/home/zhenyang/Workspace/data/UCF101/models/UCF101_linearsvm_traintest1.model'
     if os.path.exist(model_file+'.pkl'):
         with open(model_file+'.pkl', 'r') as fp:
             classifier = pickle.load(fp)
@@ -117,6 +117,7 @@ if __name__ == '__main__':
             pickle.dump(classifier, fp)
 
     # TESTING
+    result_file = '/home/zhenyang/Workspace/data/UCF101/results/UCF101_linearsvm_traintest1.result'
     metrics = classify_library.metric_scores(classifier, X_test, Y_test, verbose=True)
     print metrics
 
