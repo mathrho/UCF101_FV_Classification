@@ -118,15 +118,15 @@ def list_descriptors(directory, vid_features):
     return vid_descs
 
 
-# returns a list of vid_descriptors objects, sample #nr_sampels_pvid IDTFeatures per video
-def list_descriptors_sampled(directory, vid_features, nr_sampels_pvid):
+# returns a list of vid_descriptors objects, sample #nr_samples_pvid IDTFeatures per video
+def list_descriptors_sampled(directory, vid_features, nr_samples_pvid):
     vid_descs = []
     for vid_feature in vid_features:
         print vid_feature
         points = read_IDTF_file(os.path.join(directory,vid_feature))
         if points:
             nr_points = len(points)
-            sample_size = min(nr_points,nr_sampels_pvid)
+            sample_size = min(nr_points,nr_samples_pvid)
             idx_sampled = random.sample(xrange(nr_points),sample_size)
             idx_sampled.sort()
             points_sampled = [points[i] for i in idx_sampled]
