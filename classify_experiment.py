@@ -118,6 +118,6 @@ if __name__ == '__main__':
 
     # TESTING
     result_file = '/home/zhenyang/Workspace/data/UCF101/results/UCF101_linearsvm_traintest1.result'
-    metrics = classify_library.metric_scores(classifier, X_test, Y_test, verbose=True)
-    print metrics
+    results = classify_library.metric_scores(classifier, X_test, Y_test, verbose=True)
+    print results
 

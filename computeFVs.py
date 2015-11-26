@@ -10,7 +10,6 @@ Uses multi-threading to extract IDTFs and compute the Fisher Vectors (FVs) for
 each of the videos in the input list (vid_list). The Fisher Vectors are output
 in the fv_dir
 """
-
 # Improved Dense Trajectories binary
 dtBin = './DenseTrackStab'
 # ...
@@ -81,3 +80,4 @@ if __name__ == '__main__':
             #processVideo(vid,IDT_DIR,FV_DIR,gmm_list)
             pool.add_task(processVideo,vid,IDT_DIR,FV_DIR,gmm_list)
     pool.wait_completion()
+
